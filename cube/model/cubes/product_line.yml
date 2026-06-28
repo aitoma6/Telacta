@@ -1,0 +1,13 @@
+cubes:
+  - name: product_line
+    sql_table: dim_product_line
+
+    dimensions:
+      - name: product_line_id
+        sql: product_line_id
+        type: number
+        primary_key: true
+
+      - name: product_line
+        sql: product_line_name
+        type: string

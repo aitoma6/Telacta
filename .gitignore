@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Cube local artifacts
+.cubestore/
+cube/.cubestore/

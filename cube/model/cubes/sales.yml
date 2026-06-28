@@ -1,0 +1,63 @@
+cubes:
+  - name: sales
+    sql_table: fact_sales
+
+    joins:
+      - name: product
+        relationship: many_to_one
+        sql: "{CUBE}.product_id = {product.product_id}"
+
+      - name: retailer
+        relationship: many_to_one
+        sql: "{CUBE}.retailer_id = {retailer.retailer_id}"
+
+      - name: region
+        relationship: many_to_one
+        sql: "{CUBE}.region_id = {region.region_id}"
+
+      - name: order_method
+        relationship: many_to_one
+        sql: "{CUBE}.order_method_id = {order_method.order_method_id}"
+
+    measures:
+      - name: total_revenue
+        sql: revenue
+        type: sum
+        format: currency
+
+      - name: total_quantity
+        sql: quantity
+        type: sum
+
+      - name: order_count
+        sql: order_id
+        type: count_distinct
+
+      - name: gross_profit
+        sql: gross_profit
+        type: sum
+        format: currency
+
+      - name: gross_margin_rate
+        sql: "1.0 * {gross_profit} / NULLIF({total_revenue}, 0)"
+        type: number
+        format: percent
+
+      - name: average_order_value
+        sql: "1.0 * {total_revenue} / NULLIF({order_count}, 0)"
+        type: number
+        format: currency
+
+    dimensions:
+      - name: sales_id
+        sql: sales_id
+        type: number
+        primary_key: true
+
+      - name: order_id
+        sql: order_id
+        type: string
+
+      - name: order_date
+        sql: order_date
+        type: time

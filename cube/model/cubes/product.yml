@@ -1,0 +1,26 @@
+cubes:
+  - name: product
+    sql_table: dim_product
+
+    joins:
+      - name: product_line
+        relationship: many_to_one
+        sql: "{CUBE}.product_line_id = {product_line.product_line_id}"
+
+    dimensions:
+      - name: product_id
+        sql: product_id
+        type: number
+        primary_key: true
+
+      - name: sku
+        sql: sku
+        type: string
+
+      - name: product_name
+        sql: product_name
+        type: string
+
+      - name: category
+        sql: category
+        type: string

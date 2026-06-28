@@ -1,0 +1,13 @@
+cubes:
+  - name: order_method
+    sql_table: dim_order_method
+
+    dimensions:
+      - name: order_method_id
+        sql: order_method_id
+        type: number
+        primary_key: true
+
+      - name: order_method
+        sql: order_method_name
+        type: string

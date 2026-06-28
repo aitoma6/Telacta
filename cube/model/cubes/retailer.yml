@@ -1,0 +1,22 @@
+cubes:
+  - name: retailer
+    sql_table: dim_retailer
+
+    joins:
+      - name: region
+        relationship: many_to_one
+        sql: "{CUBE}.region_id = {region.region_id}"
+
+    dimensions:
+      - name: retailer_id
+        sql: retailer_id
+        type: number
+        primary_key: true
+
+      - name: retailer_name
+        sql: retailer_name
+        type: string
+
+      - name: retailer_type
+        sql: retailer_type
+        type: string
