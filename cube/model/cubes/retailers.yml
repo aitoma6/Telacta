@@ -1,11 +1,11 @@
 cubes:
-  - name: retailer
+  - name: retailers
     sql_table: dim_retailer
 
     joins:
-      - name: region
+      - name: regions
         relationship: many_to_one
-        sql: "{CUBE}.region_id = {region.region_id}"
+        sql: "{CUBE}.region_id = {regions.region_id}"
 
     dimensions:
       - name: retailer_id

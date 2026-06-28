@@ -3,21 +3,21 @@ cubes:
     sql_table: fact_sales
 
     joins:
-      - name: product
+      - name: products
         relationship: many_to_one
-        sql: "{CUBE}.product_id = {product.product_id}"
+        sql: "{CUBE}.product_id = {products.product_id}"
 
-      - name: retailer
+      - name: retailers
         relationship: many_to_one
-        sql: "{CUBE}.retailer_id = {retailer.retailer_id}"
+        sql: "{CUBE}.retailer_id = {retailers.retailer_id}"
 
-      - name: region
+      - name: regions
         relationship: many_to_one
-        sql: "{CUBE}.region_id = {region.region_id}"
+        sql: "{CUBE}.region_id = {regions.region_id}"
 
-      - name: order_method
+      - name: order_methods
         relationship: many_to_one
-        sql: "{CUBE}.order_method_id = {order_method.order_method_id}"
+        sql: "{CUBE}.order_method_id = {order_methods.order_method_id}"
 
     measures:
       - name: total_revenue

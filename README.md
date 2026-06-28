@@ -70,6 +70,32 @@ Cube の readiness 確認:
 curl http://localhost:4000/readyz
 ```
 
+Cube REST API のメタデータ確認:
+
+```bash
+TOKEN=$(python3 - <<'PY'
+import base64
+import hashlib
+import hmac
+import json
+
+secret = b"telacta-dev-secret"
+header = base64.urlsafe_b64encode(
+    json.dumps({"alg": "HS256", "typ": "JWT"}).encode()
+).rstrip(b"=")
+payload = base64.urlsafe_b64encode(
+    json.dumps({"iat": 0, "exp": 4102444800}).encode()
+).rstrip(b"=")
+signature = base64.urlsafe_b64encode(
+    hmac.new(secret, header + b"." + payload, hashlib.sha256).digest()
+).rstrip(b"=")
+print((header + b"." + payload + b"." + signature).decode())
+PY
+)
+
+curl -H "Authorization: $TOKEN" http://localhost:4000/cubejs-api/v1/meta
+```
+
 Postgres にデータが入ったか確認:
 
 ```bash
@@ -87,6 +113,88 @@ JOIN dim_product_line pl ON p.product_line_id = pl.product_line_id
 GROUP BY pl.product_line_name
 ORDER BY revenue DESC;
 "
+```
+
+## Cube REST API クエリ例
+
+以下は `POST /cubejs-api/v1/load` に対する例です。
+
+JSON と curl の例は [docs/cube-rest-api-examples.md](/Users/aitomahara/dev-work/Telacta/docs/cube-rest-api-examples.md:1) にもまとめています。
+
+2025年の売上:
+
+```bash
+curl -X POST http://localhost:4000/cubejs-api/v1/load \
+  -H "Content-Type: application/json" \
+  -H "Authorization: $TOKEN" \
+  --data '{
+    "query": {
+      "measures": ["sales.total_revenue"],
+      "timeDimensions": [
+        {
+          "dimension": "sales.order_date",
+          "dateRange": ["2025-01-01", "2025-12-31"]
+        }
+      ]
+    }
+  }'
+```
+
+商品ライン別の売上:
+
+```bash
+curl -X POST http://localhost:4000/cubejs-api/v1/load \
+  -H "Content-Type: application/json" \
+  -H "Authorization: $TOKEN" \
+  --data '{
+    "query": {
+      "measures": ["sales.total_revenue"],
+      "dimensions": ["products.product_line"],
+      "order": {
+        "sales.total_revenue": "desc"
+      }
+    }
+  }'
+```
+
+国別の売上:
+
+```bash
+curl -X POST http://localhost:4000/cubejs-api/v1/load \
+  -H "Content-Type: application/json" \
+  -H "Authorization: $TOKEN" \
+  --data '{
+    "query": {
+      "measures": ["sales.total_revenue"],
+      "dimensions": ["regions.country"],
+      "order": {
+        "sales.total_revenue": "desc"
+      }
+    }
+  }'
+```
+
+直近6ヶ月の売上推移:
+
+```bash
+curl -X POST http://localhost:4000/cubejs-api/v1/load \
+  -H "Content-Type: application/json" \
+  -H "Authorization: $TOKEN" \
+  --data '{
+    "query": {
+      "measures": ["sales.total_revenue"],
+      "timeDimensions": [
+        {
+          "dimension": "sales.order_date",
+          "granularity": "month",
+          "dateRange": ["2025-07-01", "2025-12-31"]
+        }
+      ],
+      "order": {
+        "sales.order_date": "asc"
+      }
+    }
+  }'
 ```
 
 ## データセット概要

@@ -1,0 +1,37 @@
+cubes:
+  - name: products
+    sql: >
+      SELECT
+        p.product_id,
+        p.product_line_id,
+        p.sku,
+        p.product_name,
+        p.category,
+        p.base_price,
+        p.base_cost,
+        pl.product_line_name
+      FROM dim_product p
+      JOIN dim_product_line pl
+        ON p.product_line_id = pl.product_line_id
+
+    dimensions:
+      - name: product_id
+        sql: product_id
+        type: number
+        primary_key: true
+
+      - name: sku
+        sql: sku
+        type: string
+
+      - name: product_name
+        sql: product_name
+        type: string
+
+      - name: category
+        sql: category
+        type: string
+
+      - name: product_line
+        sql: product_line_name
+        type: string
