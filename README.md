@@ -42,10 +42,17 @@ docker compose ps
 docker compose logs -f api
 ```
 
+4. Cube semantic model の一部メタデータを Neo4j に同期します。
+
+```bash
+docker compose run --rm sync-metadata
+```
+
 `podman compose` を使う場合も同様です。
 
 ```bash
 podman compose run --rm seed
+podman compose run --rm sync-metadata
 ```
 
 ## 接続先
@@ -68,6 +75,12 @@ Cube の readiness 確認:
 
 ```bash
 curl http://localhost:4000/readyz
+```
+
+Neo4j へ同期したメタデータ件数の確認:
+
+```bash
+docker compose run --rm sync-metadata
 ```
 
 Cube REST API のメタデータ確認:
@@ -113,6 +126,22 @@ JOIN dim_product_line pl ON p.product_line_id = pl.product_line_id
 GROUP BY pl.product_line_name
 ORDER BY revenue DESC;
 "
+```
+
+Neo4j Browser で同期結果を確認:
+
+```cypher
+MATCH (c:Cube)-[r]->(n)
+RETURN c, r, n
+LIMIT 50;
+```
+
+BusinessTerm と Synonym の確認:
+
+```cypher
+MATCH (s:Synonym)-[:ALIAS_OF]->(t:BusinessTerm)-[:MAPS_TO]->(n)
+RETURN s.term, t.term, labels(n), n.full_name
+ORDER BY t.term, s.term;
 ```
 
 ## Cube REST API クエリ例
